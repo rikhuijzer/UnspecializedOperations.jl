@@ -1,0 +1,7 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+IOCapture = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
+UnspecializedOperations = "374fcb34-4cc3-46d3-819a-faeae48b431d"
+
+[compat]
+Documenter = "0.27"
