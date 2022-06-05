@@ -1,5 +1,12 @@
 module UnspecializedOperations
 
+if isdefined(Base, :Experimental) && isdefined(Base.Experimental, Symbol("@optlevel"))
+    @eval Base.Experimental.@optlevel 1
+end
+if isdefined(Base, :Experimental) && isdefined(Base.Experimental, Symbol("@max_methods"))
+    @eval Base.Experimental.@max_methods 1
+end
+
 export umap, umapfoldl
 
 function umap(T::DataType, f, @nospecialize(A))
@@ -43,5 +50,10 @@ function umapfoldl(InterT::DataType, OutT, f, op, @nospecialize(A); init=_Initia
     end
 end
 umapfoldl(f, op, @nospecialize(A); init=_InitialValue()) = umapfoldl(Any, Any, f, op, A; init)
+
+if ccall(:jl_generating_output, Cint, ()) == 1
+    umap(Int, x -> 2x, 1:2)
+    umapfoldl(x -> 2x, +, 1:2)
+end
 
 end # module
