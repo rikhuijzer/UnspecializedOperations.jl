@@ -34,25 +34,28 @@ and can continue with the demo:
 
 ```@example demo
 using UnspecializedOperations
-```
 
-```@example demo
-@time @eval umap(identity, 1:2);
+A = Any[1, 2];
 nothing # hide
 ```
 
 ```@example demo
-@time @eval map(identity, 1:2);
+@time @eval umap(identity, A);
 nothing # hide
 ```
 
 ```@example demo
-@time @eval umapfoldl(identity, +, 1:2);
+@time @eval map(identity, A);
 nothing # hide
 ```
 
 ```@example demo
-@time @eval mapfoldl(identity, +, 1:2);
+@time @eval umapfoldl(identity, +, A);
+nothing # hide
+```
+
+```@example demo
+@time @eval mapfoldl(identity, +, A);
 nothing # hide
 ```
 
