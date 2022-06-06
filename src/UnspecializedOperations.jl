@@ -7,9 +7,10 @@ if isdefined(Base, :Experimental) && isdefined(Base.Experimental, Symbol("@max_m
     @eval Base.Experimental.@max_methods 1
 end
 
-export umap, umapfoldl
+# Notes:
+# - Using @noinline to avoid compiling function bodies twice.
 
-function umap(T::DataType, f, @nospecialize(A))
+@noinline function umap(T::Type, f, @nospecialize(A))
     l = length(A)
     out = Vector{T}(undef, l)
     for i in 1:l
@@ -18,10 +19,19 @@ function umap(T::DataType, f, @nospecialize(A))
     return out
 end
 umap(f, @nospecialize(A)) = umap(Any, f, A)
+precompile(umap, (Function, Vector{Any}))
+export umap
 
 struct _InitialValue end
 
-function umapfoldl(InterT::DataType, OutT, f, op, @nospecialize(A); init=_InitialValue())
+@noinline function umapfoldl(
+        InterT::Type,
+        OutT::Type,
+        f,
+        op,
+        @nospecialize(A);
+        init=_InitialValue()
+    )
     if isempty(A)
         return init::_InitialValue
     else
@@ -50,10 +60,10 @@ function umapfoldl(InterT::DataType, OutT, f, op, @nospecialize(A); init=_Initia
     end
 end
 umapfoldl(f, op, @nospecialize(A); init=_InitialValue()) = umapfoldl(Any, Any, f, op, A; init)
+precompile(umapfoldl, (Function, Function, Vector{Any}))
+export umapfoldl
 
 if ccall(:jl_generating_output, Cint, ()) == 1
-    umap(Int, x -> 2x, 1:2)
-    umapfoldl(x -> 2x, +, 1:2)
 end
 
 end # module

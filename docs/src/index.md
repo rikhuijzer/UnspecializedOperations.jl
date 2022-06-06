@@ -7,7 +7,13 @@ But what if you don't care about running time but about time to first X?
 This package implements unspecialized versions of Julia base functions.
 The aim of these functions is to require little compilation time.
 That's why most functions are implemented via for-loops.
-Since loops are fast in Julia, this means that the running time of the functions are often not much slower than the Julia base versions.
+
+To get the most benefits, move Vector{Any}s around because:
+
+1. A Vector{Any} can move vectors of **any** element around
+2. There is only so much specialization that can happen on a Vector{Any}.
+    If you pass Vector{A}, Vector{B} and Vector{C} around, then functions will need to be compiled for those three types.
+    With a Vector{Any}, the functions are only compiled once.
 
 ## Demo
 
@@ -18,6 +24,7 @@ We need to warmup `@time @eval` first:
 
 ```@example demo
 warmup(x) = x
+identity(1)
 @time @eval warmup(1);
 # Documenter returns stdout if output is nothing # hide
 nothing # hide
@@ -30,22 +37,22 @@ using UnspecializedOperations
 ```
 
 ```@example demo
-@time @eval umap(Int, x -> 2x, 1:2);
+@time @eval umap(identity, 1:2);
 nothing # hide
 ```
 
 ```@example demo
-@time @eval map(x -> 2x, 1:2);
+@time @eval map(identity, 1:2);
 nothing # hide
 ```
 
 ```@example demo
-@time @eval umapfoldl(Int, Int, x -> 2x, +, 1:2)
+@time @eval umapfoldl(identity, +, 1:2);
 nothing # hide
 ```
 
 ```@example demo
-@time @eval mapfoldl(x -> 2x, +, 1:2)
+@time @eval mapfoldl(identity, +, 1:2);
 nothing # hide
 ```
 
